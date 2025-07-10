@@ -64,9 +64,9 @@ This project demonstrates a fully normalized HR analytics database using Postgre
 
 ## Tools Used
 
-Database: PostgreSQL
-Interface: pgAdmin 4
-Language: SQL
+**Database** : PostgreSQL
+**Interface**: pgAdmin 4
+**Language** : SQL
 
 ---
 
