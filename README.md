@@ -43,10 +43,10 @@ This project demonstrates a fully normalized HR analytics database using Postgre
 → R&D and Sales outperform HR in pay by ~18–25%.
 
 - **Gender Distribution**
-→ 60:40 male:female ratio. Role-based gender gaps exist.
+→ 60:40 male: female ratio. Role-based gender gaps exist.
 
 - **Attrition by Role**
-→ Sales Execs & Lab Techs show highest turnover.
+→ Sales Execs & Lab Techs show the highest turnover.
 
 - **Salary vs Experience**
 → Strong positive correlation (r ≈ 0.74). Income plateaus after 15 years.
