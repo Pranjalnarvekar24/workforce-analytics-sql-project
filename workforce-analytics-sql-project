@@ -1,0 +1,152 @@
+-- Raw import table: used to load the full Kaggle CSV before splitting into normalized tables
+-- Data is later inserted from this into the smaller normalized tables
+CREATE TABLE Employee_data(
+Age INT NOT NULL,
+Attrition VARCHAR (50),
+Business_travel VARCHAR (50),
+Department VARCHAR (50),
+Distance_from_home INT,
+Education INT,
+Education_Field VARCHAR (100),
+Employee_Count INT,
+Employee_number SERIAL PRIMARY KEY,
+Environment_satisfaction INT,
+Gender VARCHAR (50) NOT NULL,
+Hourly_Rate INT,
+Job_Involvement INT,
+Job_Level INT,
+Job_role VARCHAR (50),
+Job_satisfaction INT,
+Marital_Status VARCHAR (20),
+Monthly_Income INT NOT NULL, 
+Number_of_companies_worked INT,
+Over_18 VARCHAR (10),
+Overtime VARCHAR (10),
+Percent_salary_hike INT,
+Performance_Rating INT,
+Relationship_satisfaction INT,
+Standard_hours INT,
+Stock_optionlevel INT,
+Total_working_years INT,
+TrainingTimesLastYear INT,
+WorkLifeBalance INT,
+YearsAtCompany INT,
+YearsInCurrentRole INT,
+YearsSinceLastPromotion INT,
+YearsWithCurrManager INT
+);
+
+CREATE TABLE employee (
+Employee_ID SERIAL PRIMARY KEY,
+Age INT NOT NULL,
+Gender VARCHAR(50) NOT NULL,
+Marital_Status VARCHAR(20),
+Over_18 VARCHAR(10),
+Employee_Count INT
+);
+
+CREATE TABLE Job_Details (
+Employee_ID INT REFERENCES Employee(Employee_ID),
+Department VARCHAR(50),
+Job_Role VARCHAR(50),
+Job_Level INT,
+Business_Travel VARCHAR(50),
+Distance_From_Home INT,
+Total_Working_Years INT,
+YearsAtCompany INT,
+YearsInCurrentRole INT,
+YearsSinceLastPromotion INT,
+YearsWithCurrManager INT
+);
+
+CREATE TABLE Education (
+Employee_ID INT REFERENCES Employee(Employee_ID),
+Education INT,
+Education_Field VARCHAR(100),
+Number_of_Companies_Worked INT
+);
+
+CREATE TABLE Compensation (
+Employee_ID INT REFERENCES Employee(Employee_ID),
+Monthly_Income INT NOT NULL,
+Hourly_Rate INT,
+Stock_OptionLevel INT,
+Percent_Salary_Hike INT
+);
+
+CREATE TABLE Engagement (
+Employee_ID INT REFERENCES Employee(Employee_ID),
+Environment_Satisfaction INT,
+Job_Satisfaction INT,
+Relationship_Satisfaction INT,
+Job_Involvement INT,
+WorkLifeBalance INT,
+Performance_Rating INT
+);
+
+CREATE TABLE Training_Attrition (
+Employee_ID INT REFERENCES Employee(Employee_ID),
+Attrition VARCHAR(50),
+Overtime VARCHAR(10),
+TrainingTimesLastYear INT
+);
+
+-- Quick Test: Check normalized table joins
+SELECT e.Employee_ID, e.Gender, jd.Job_Role, c.Monthly_Income
+FROM Employee e
+JOIN Job_Details jd USING (Employee_ID)
+JOIN Compensation c USING (Employee_ID)
+LIMIT 5;
+
+-- Query 1: Overall Attrition Summary
+SELECT Attrition, COUNT(*) AS total
+FROM Training_Attrition
+GROUP BY Attrition;
+
+-- Query 2: Average Monthly Income by Department
+SELECT Department, ROUND(AVG(Monthly_Income), 2) AS avg_income
+FROM Compensation
+JOIN Job_Details USING (Employee_ID)
+GROUP BY Department
+ORDER BY avg_income DESC;
+
+-- Query 3: Gender Distribution
+SELECT Gender, COUNT(*) AS count
+FROM Employee
+GROUP BY Gender;
+
+-- Query 4: Attrition by Job Role
+SELECT Job_Role,
+COUNT(*) FILTER (WHERE Attrition = 'Yes') AS attrition_count
+FROM Job_Details
+JOIN Training_Attrition USING (Employee_ID)
+GROUP BY Job_Role
+ORDER BY attrition_count DESC;
+
+-- Query 5: Monthly Income by Experience and Department
+SELECT Total_Working_Years, Department, ROUND(AVG(Monthly_Income), 0) AS avg_income
+FROM Job_Details
+JOIN Compensation USING (Employee_ID)
+GROUP BY Total_Working_Years, Department
+ORDER BY Total_Working_Years;
+
+-- Query 6: Overtime vs Attrition Risk
+SELECT OverTime, Attrition, COUNT(*) AS count
+FROM Training_Attrition
+GROUP BY OverTime, Attrition
+ORDER BY OverTime, Attrition;
+
+-- Query 7: Promotion Delay by Performance Rating
+SELECT Performance_Rating, ROUND(AVG(YearsSinceLastPromotion), 2) AS avg_years_no_promo
+FROM Engagement
+JOIN Job_Details USING (Employee_ID)
+GROUP BY Performance_Rating
+ORDER BY Performance_Rating;
+
+-- Query 8: Salary by Education Field and Job Role
+SELECT Education_Field, Job_Role, ROUND(AVG(Monthly_Income), 0) AS avg_income
+FROM Education
+JOIN Job_Details USING (Employee_ID)
+JOIN Compensation USING (Employee_ID)
+GROUP BY Education_Field, Job_Role
+ORDER BY avg_income DESC;
