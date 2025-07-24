@@ -76,7 +76,7 @@ This project demonstrates how to build and analyze a normalized HR analytics dat
 | **Internal Mobility Rate** | % of employees who changed roles/departments | 5.2% — suggests limited lateral growth opportunities                    |
 | **Average Salary Hike**    | Avg. % salary increment per year             | 11.2% — varies across departments & education levels                    |
 
---
+---
 
 ## Future HR Recommendations
 
@@ -107,7 +107,7 @@ This project demonstrates how to build and analyze a normalized HR analytics dat
 - With only 5.2% internal transfers, consider launching an internal job board or “talent marketplace.”
 - Encourage managers to recommend top talent for inter-departmental projects.
 
---
+---
 
 ## Tools Used
 
